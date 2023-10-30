@@ -1,0 +1,24 @@
+from airflow.models import DAG
+from airflow.utils.dag_processing import DAGInstance
+from airflow.settings import Session
+
+dag_id_to_unpause = 'your_dag_id'
+
+# Get the DAG model from the database
+dag = DAG.get_dagmodel(dag_id_to_unpause)
+
+if dag is not None:
+    if dag.is_paused:
+        # Create a session
+        session = Session()
+
+        # Unpause the DAG by setting is_paused to False
+        dag.is_paused = False
+        session.commit()
+        session.close()
+
+        print(f"DAG '{dag_id_to_unpause}' has been unpaused.")
+    else:
+        print(f"DAG '{dag_id_to_unpause}' is already unpaused.")
+else:
+    print(f"DAG '{dag_id_to_unpause}' does not exist.")
